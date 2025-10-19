@@ -2,5 +2,4 @@
 node_modules
 
 # Arquivo de configuração da senha secreta
-src/config.js
 .env
