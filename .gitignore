@@ -1,0 +1,5 @@
+# Dependências do Node.js
+node_modules
+
+# Arquivo de configuração da senha secreta
+src/config.js
