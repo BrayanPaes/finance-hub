@@ -1,11 +1,7 @@
 const { Pool } = require('pg');
+require('dotenv').config();
 
-// --- CONFIGURAÇÃO DA CONEXÃO COM O POSTGRESQL (Supabase) ---
 const pool = new Pool({
-    user: 'postgres',
-    host: 'db.moqbswkphogicikohhrf.supabase.co',
-    database: 'postgres',
-    password: 'Brayan090909',
-    port: 5432
+    connectionString: process.env.DATABASE_URL
 });
 module.exports = pool;
