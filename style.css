@@ -1,0 +1,77 @@
+/* Estilos gerais para a página */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #1c1e21;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container principal */
+main {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Container de cada formulário */
+.form-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+/* Estilo para os formulários */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input {
+    padding: 12px;
+    border: 1px solid #dddfe2;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+button {
+    background-color: #1877f2;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #166fe5;
+}
+
+/* Área de mensagens de erro ou sucesso */
+#auth-mensagem {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 15px;
+    padding: 10px;
+}
+
+.hidden {
+    display: none;
+}
