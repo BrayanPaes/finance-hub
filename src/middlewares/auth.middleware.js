@@ -10,11 +10,11 @@ function verificaToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1] //Pega só o token
     if (token == null) {
-        return res.sendStatus(401);
+        return res.status(401).json({ message: 'Token de autenticação não fornecido.' });
     }
     jwt.verify(token, segredoJWT, (err, usuario) => {
         if (err) {
-            return res.sendStatus(403);
+return res.status(403).json({ message: 'Token inválido ou expirado.' });
         }
          req.user = usuario;
         next();
