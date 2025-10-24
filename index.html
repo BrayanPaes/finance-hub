@@ -45,6 +45,32 @@
         </div>
 
         <div id="app-view" class="hidden">
+            <header>
+                <h2 id="welcome-message"></h2>
+                <button id="logout-button">Sair</button>
+            </header>
+
+            <section class="form-container">
+                <h3>Adicionar Nova Transação</h3>
+                <form id="transacao-form">
+                    <input type="text" id="transacao-descricao" placeholder="Descrição" required>
+                    <input type="number" id="transacao-valor" placeholder="Valor" step="0.01" required>
+                    <input type="date" id="transacao-data" required>
+                    <input type="text" id="transacao-categoria" placeholder="Categoria" required>
+                    <select id="transacao-tipo" required>
+                        <option value="despesas">Despesas</option>
+                        <option value="receita">Receita</option>
+                    </select>
+                    <button type="submit">Adicionar</button>
+                </form>
+            </section>
+
+            <section id="dados-view">
+                <h3>Seu Extrato</h3>
+                <div id="extrato-container"></div>
+                <h3>Suas Transações</h3>
+                <ul id="transacoes-lista"></ul>
+            </section>
         </div>
     </main>
     <script src="script.js"></script>
