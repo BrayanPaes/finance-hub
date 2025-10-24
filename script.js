@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const authMensagem = document.getElementById('auth-mensagem');
     const appView = document.getElementById('app-view');
 
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        authView.classList.add('hidden');
+        appView.classList.remove('hidden');
+        inicializarApp();
+    }
+
     // --- LÓGICA DE CADASTRO ---
     registroForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -205,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DE LOGOUT ---
     const logoutButton = document.getElementById('logout-button');
     logoutButton.addEventListener('click', () => {
-        localStorage.removeItem('aturhToken');
+        localStorage.removeItem('authToken');
         window.location.reload();
     });
 });
