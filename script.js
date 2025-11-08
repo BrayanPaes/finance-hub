@@ -180,10 +180,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.dataset.tipo = transacao.tipo;
                 
             const conteudo = document.createElement('div');
-            conteudo.innerHTML = `<strong>${transacao.descricao}</strong> <span style="color:${transacao.tipo === 'receita' ? 'green' : 'red'};">
-            R$ ${transacao.valor}
-            </span>
-            <small>(${dia}/${mes}/${ano})</small>`;
+            conteudo.innerHTML = `
+                    <div class="transacao-linha-1">
+                        <strong>${transacao.descricao}</strong>
+                        <small>(${transacao.categoria})</small>
+                    </div>
+                    <div class="transacao-linha-2">
+                        <span style="color:${transacao.tipo === 'receita' ? 'green' : 'red'};">
+                            R$ ${transacao.valor}
+                        </span>
+                        <small>(${dia}/${mes}/${ano})</small>
+                    </div>
+                `;
 
             const botoes = document.createElement('div');
             botoes.className = 'botoes-container';
