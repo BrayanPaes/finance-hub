@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authMensagem = document.getElementById('auth-mensagem');
     const appView = document.getElementById('app-view');
     const transacoesLista = document.getElementById('transacoes-lista');
+    const loadingSpinner = document.getElementById('loading-spinner');
 
     // --- VARIÁVEIS DE ESTADO DA APLICAÇÃO ---
     let modoDeEdicao = false;
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const dadosUsuario = { nome, email, senha };
 
+        loadingSpinner.classList.remove('hidden');
         try {
             const response = await fetch(`${apiUrl}/usuarios`, {
                 method: 'POST',
@@ -47,8 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 authMensagem.textContent = 'Cadastro realizado com sucesso! Você já pode fazer o login.';
                 authMensagem.style.color = 'green';
                 registroForm.reset();
+                loadingSpinner.classList.add('hidden');
             } else {
+                loadingSpinner.classList.add('hidden');
                 if (data.errors && data.errors.length > 0) {
+                    loadingSpinner.classList.add('hidden');
                     authMensagem.textContent = data.errors[0].mensagem;
                 } else {
                     authMensagem.textContent = data.message || 'Erro ao cadastrar.';
@@ -56,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 authMensagem.style.color = 'red';
             }
         } catch (error) {
+            loadingSpinner.classList.add('hidden');
             authMensagem.textContent = 'Erro de conexão. Tente novamente.';
             authMensagem.style.color = 'red';
         }
@@ -70,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const senha = document.getElementById('login-senha').value;
 
         const dadosLogin = { email, senha };
+        loadingSpinner.classList.remove('hidden');
 
         try {
             const response = await fetch(`${apiUrl}/usuarios/login`, {
@@ -86,14 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 authView.classList.add('hidden');
                 appView.classList.remove('hidden');
+                loadingSpinner.classList.add('hidden');
 
                 inicializarApp();
 
             } else {
+                loadingSpinner.classList.add('hidden');
                 authMensagem.textContent = data.message || 'Erro ao fazer login.';
                 authMensagem.style.color = 'red';
             }
         } catch (error) {
+            loadingSpinner.classList.add('hidden');
             authMensagem.textContent = 'Erro de conexão. Tente novamente.';
             authMensagem.style.color = 'red';
         }
