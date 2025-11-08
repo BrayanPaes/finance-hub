@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const authMensagem = document.getElementById('auth-mensagem');
     const appView = document.getElementById('app-view');
+    const transacoesLista = document.getElementById('transacoes-lista');
 
     const token = localStorage.getItem('authToken');
     if (token) {
@@ -157,10 +158,21 @@ document.addEventListener('DOMContentLoaded', () => {
             transacoesLista.innerHTML = '';
             transacoes.forEach(transacao => {
             const item = document.createElement('li');
-            item.innerHTML = `<strong>${transacao.descricao}</strong> <span style="color:${transacao.tipo === 'receita' ? 'green' : 'red'};">
+            item.dataset.id = transacao.id;
+
+            const conteudo = document.createElement('div');
+            conteudo.innerHTML = `<strong>${transacao.descricao}</strong> <span style="color:${transacao.tipo === 'receita' ? 'green' : 'red'};">
             R$ ${transacao.valor}
             </span>
             <small>(${new Date(transacao.data).toLocaleDateString()})</small>`;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Deletar';
+            deleteButton.className = 'delete-btn';
+
+            item.appendChild(conteudo);
+            item.appendChild(deleteButton);
+
             transacoesLista.appendChild(item);
             });
                 
@@ -206,6 +218,40 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Erro ao criar transação:', error);
             alert('Erro de conexão ao adicionar transação.');
+        }
+    });
+
+    transacoesLista.addEventListener('click', async (event) => {
+        if (event.target.classList.contains('delete-btn')) {
+            const item = event.target.closest('li');
+            const transacaoId = item.dataset.id;
+
+            const token = localStorage.getItem('authToken');
+            if(!token) {
+                alert('Sessão expirada. Faça login novamente.');
+                return;
+            }
+            if (!confirm('Tem certeza que deseja deletar esta transação?')) {
+                return;
+            }
+            try {
+                const response = await fetch(`${apiUrl}/transacoes/${transacaoId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    buscarDadosFinanceiros();
+                } else {
+                    const errorData = await response.json();
+                    alert(`Erro ao deletar: ${errorData.message}`);
+                }
+            } catch (error) {
+                console.error('Erro ao deletar transação:', error);
+                alert('Erro de conexão ao deletar transação.');
+            }
         }
     });
 
