@@ -100,3 +100,39 @@ button:hover {
 .delete-btn:hover {
     background-color: #e03030;
 }
+
+.botoes-container {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn {
+    background-color: #1877f2;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+.edit-btn:hover {
+    background-color: #166fe5;
+}
+
+.form-botoes-container {
+    display: flex;
+    gap: 10px;
+}
+
+.form-botoes-container button {
+    flex: 1;
+}
+
+#cancelar-btn {
+    background-color: #f0f2f5;
+    color: #4b4f56;
+}
+
+#cancelar-btn:hover {
+    background-color: #e4e6eb;
+}

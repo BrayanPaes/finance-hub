@@ -9,6 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const appView = document.getElementById('app-view');
     const transacoesLista = document.getElementById('transacoes-lista');
 
+    // --- VARIÁVEIS DE ESTADO DA APLICAÇÃO ---
+    let modoDeEdicao = false;
+    let idParaEditar = null;
+
+    // --- NOVAS REFERÊNCIAS PARA O FORMULÁRIO DE TRANSAÇÃO ---
+    const transacaoForm = document.getElementById('transacao-form');
+    const salvarBtn = document.getElementById('salvar-btn');
+    const cancelarBtn = document.getElementById('cancelar-btn');
+
     const token = localStorage.getItem('authToken');
     if (token) {
         authView.classList.add('hidden');
@@ -160,18 +169,38 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = document.createElement('li');
             item.dataset.id = transacao.id;
 
+                item.dataset.descricao = transacao.descricao;
+                item.dataset.valor = transacao.valor;
+                const dataUTC = new Date(transacao.data);
+                const ano = dataUTC.getUTCFullYear();
+                const mes = String(dataUTC.getUTCMonth() + 1).padStart(2, '0');
+                const dia = String(dataUTC.getUTCDate()).padStart(2, '0');
+                item.dataset.data = `${ano}-${mes}-${dia}`;
+                item.dataset.categoria = transacao.categoria;
+                item.dataset.tipo = transacao.tipo;
+                
             const conteudo = document.createElement('div');
             conteudo.innerHTML = `<strong>${transacao.descricao}</strong> <span style="color:${transacao.tipo === 'receita' ? 'green' : 'red'};">
             R$ ${transacao.valor}
             </span>
-            <small>(${new Date(transacao.data).toLocaleDateString()})</small>`;
+            <small>(${dia}/${mes}/${ano})</small>`;
+
+            const botoes = document.createElement('div');
+            botoes.className = 'botoes-container';
+
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Editar';
+            editButton.className = 'edit-btn';
 
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Deletar';
             deleteButton.className = 'delete-btn';
 
+            botoes.appendChild(editButton);
+            botoes.appendChild(deleteButton);
+
             item.appendChild(conteudo);
-            item.appendChild(deleteButton);
+            item.appendChild(botoes);
 
             transacoesLista.appendChild(item);
             });
@@ -181,26 +210,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const transacaoForm = document.getElementById('transacao-form');
     transacaoForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-
-        const descricao = document.getElementById('transacao-descricao').value;
-        const valor = document.getElementById('transacao-valor').value;
-        const data = document.getElementById('transacao-data').value;
-        const categoria = document.getElementById('transacao-categoria').value;
-        const tipo = document.getElementById('transacao-tipo').value;
-
         const token = localStorage.getItem('authToken');
-        if (!token) {
-            authMensagem.textContent = 'Sessão expirada. Faça o login novamente.';
-            return;
+        if (!token) return alert('Sessão expirada. Faça o login novamente.');
+
+        const dataString = document.getElementById('transacao-data').value;
+        const dataCorrigida = new Date(dataString + 'T12:00:00');
+
+        const dadosTransacao = {
+            descricao: document.getElementById('transacao-descricao').value,
+            valor: document.getElementById('transacao-valor').value,
+            data: dataCorrigida,
+            categoria: document.getElementById('transacao-categoria').value,
+            tipo: document.getElementById('transacao-tipo').value,
+        };
+
+        let url = `${apiUrl}/transacoes`;
+        let method = 'POST';
+        if (modoDeEdicao) {
+            url = `${apiUrl}/transacoes/${idParaEditar}`;
+            method = 'PUT';
         }
-        const dadosTransacao = {descricao, valor, data, categoria, tipo};
 
         try {
-            const response = await fetch(`${apiUrl}/transacoes`, {
-                method: 'POST',
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -209,15 +244,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                transacaoForm.reset();
+                transacaoForm.reset(); 
+                if (modoDeEdicao) {
+                    modoDeEdicao = false;
+                    idParaEditar = null;
+                    salvarBtn.textContent = 'Adicionar';
+                    cancelarBtn.classList.add('hidden');
+                }
                 buscarDadosFinanceiros();
             } else {
                 const errorData = await response.json();
-                alert(`Erro: ${errorData.message || 'Não foi possível adicionar a transação.'}`);
+                alert(`Erro: ${errorData.message || 'Não foi possível salvar a transação.'}`);
             }
         } catch (error) {
-            console.error('Erro ao criar transação:', error);
-            alert('Erro de conexão ao adicionar transação.');
+            console.error('Erro ao salvar transação:', error);
+            alert('Erro de conexão ao salvar transação.');
         }
     });
 
@@ -253,6 +294,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Erro de conexão ao deletar transação.');
             }
         }
+
+        if (event.target.classList.contains('edit-btn')) {
+            const item = event.target.closest('li');
+
+            const id = item.dataset.id;
+            const descricao = item.dataset.descricao;
+            const valor = item.dataset.valor;
+            const data = item.dataset.data;
+            const categoria = item.dataset.categoria;
+            const tipo = item.dataset.tipo;
+
+            document.getElementById('transacao-descricao').value = descricao;
+            document.getElementById('transacao-valor').value = valor;
+            document.getElementById('transacao-data').value = data;
+            document.getElementById('transacao-categoria').value = categoria;
+            document.getElementById('transacao-tipo').value = tipo;
+
+            modoDeEdicao = true;
+            idParaEditar = id;
+            salvarBtn.textContent = 'Salvar Alterações'; // Muda o texto do botão
+            cancelarBtn.classList.remove('hidden');
+        }
+    });
+
+    cancelarBtn.addEventListener('click', () => {
+        transacaoForm.reset();
+        modoDeEdicao = false;
+        idParaEditar = null;
+        salvarBtn.textContent = 'Adicionar';
+        cancelarBtn.classList.add('hidden');
     });
 
     // --- LÓGICA DE LOGOUT ---
